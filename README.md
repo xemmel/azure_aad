@@ -16,10 +16,114 @@
 ## Web Apps
 
 Create an **App Registration** in *AAD*
+> See CLI Commands
+
+### Modify Program.cs
+
 ```powershell
+
+dotnet add package Microsoft.AspNetCore.Authentication.OpenIdConnect;
+dotnet add package Microsoft.Identity.Web;
+dotnet add package Microsoft.Identity.Web.UI;
+
 
 ```
 
+> Program.cs
+
+```csharp
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.AddAuthorization(options =>
+{
+    // By default, all incoming requests will be authorized according to the default policy.
+    options.FallbackPolicy = options.DefaultPolicy;
+});
+builder.Services.AddRazorPages()
+    .AddMicrosoftIdentityUI();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapRazorPages();
+app.MapControllers();
+
+app.Run();
+
+
+```
+
+> app.settings.json
+
+```json
+
+  "AzureAd": {
+    "Instance": "https://login.microsoftonline.com/",
+    "Domain": "name.onmicrosoft.com",
+    "TenantId": "a2...",
+    "ClientId": "ff...",
+    "CallbackPath": "/signin-oidc"
+  }
+
+```
+
+> Shared/_LoginPartial.cshtml
+
+```razor
+@using System.Security.Principal
+
+<ul class="navbar-nav">
+@if (User.Identity?.IsAuthenticated == true)
+{
+        <span class="navbar-text text-dark">Hello @User.Identity?.Name!</span>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
+        </li>
+}
+else
+{
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a>
+        </li>
+}
+</ul>
+
+
+```
+
+> Shared/_Layout.cshtml
+
+line 28
+
+```razor
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+
+```
 [Back to top](#table-of-content)
 
 ## CLI Commands
@@ -68,7 +172,7 @@ Clear-Host;
 #$aud = "AzureADMultipleOrgs";
 $aud = "AzureADMyOrg";
 
-$displayName = "bestilmereweb";
+$displayName = "thefullwebapp";
 $result = az ad app create --display-name $displayName --sign-in-audience $aud;
 $app = $result | ConvertFrom-Json;
 Write-Host "ClientId: $($app.AppId)";
@@ -84,7 +188,7 @@ $appObjectId = $app.id;
 # $appObjectId = "84be8977-721d-4f7d-95f3-0f0926b993cb";
 
 Clear-Host;
-$redirectUrl = "https://localhost:7035";
+$redirectUrl = "https://localhost:7283";
 $type = "web"; ## spa|publicClient
 
 $url = "https://graph.microsoft.com/v1.0/applications/$appObjectId";
@@ -94,7 +198,7 @@ $body = @"
 {
     "$($type)" : {
         "redirectUris" : [ "$($redirectUrl)/","$($redirectUrl)/signin-oidc" ],
-        "logoutUrl" : "$($redirectUrl)/signout-callback-oidc",
+        "logoutUrl" : "$($redirectUrl)/signout-oidc",
         "implicitGrantSettings" : {
             "enableAccessTokenIssuance": false,
             "enableIdTokenIssuance": true
