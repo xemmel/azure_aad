@@ -173,6 +173,18 @@ $token = $response.Content | ConvertFrom-Json | Select-Object -ExpandProperty ac
 $headers = @{"Authorization" = "Bearer $token"};
 
 $parts = $token.Split('.');
+if (($parts[1].Length % 4) -ne 0) {
+    if (($parts[1].Length % 4) -eq 1) {
+        $parts[1] += "===";
+    }
+        if (($parts[1].Length % 4) -eq 2) {
+        $parts[1] += "==";
+    }
+            if (($parts[1].Length % 4) -eq 3) {
+        $parts[1] += "=";
+    }
+}
+
 [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($parts[0])) | ConvertFrom-Json | ConvertTo-Json;
 [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($parts[1])) | ConvertFrom-Json | ConvertTo-Json;
 
