@@ -6,8 +6,9 @@
 
 1. [Introduction](#introduction)
 2. [Web Apps](#web-apps)
+3. [Get Tokens](#get-tokens)
 
-10. [CLI Commands](#cli-Commands)
+4.  [CLI Commands](#cli-Commands)
 
 ## Introduction
 
@@ -125,6 +126,96 @@ line 28
 
 ```
 [Back to top](#table-of-content)
+
+## Get Tokens
+
+
+### Init client
+
+```powershell
+### Anders And
+
+$clientId = "38dd4f9a-4bde-4eda-a10b-7816dbada74e";
+$clientSecret = "1rK8Q~JMaJu-NuxvyqB3j4btX72XSFeHuIqnEb-9";
+
+
+## TestUser
+
+
+
+$clientId = "aff9cacd-cdf1-48c4-b75f-ae2ab59c2dc3";
+$clientSecret = "rbO7Q~8ugVvblbQG7P2fqvEQ0iReQb0SEHIFp";
+
+
+
+```
+
+### Get Token
+
+```powershell
+
+Clear-Host;
+
+$tenantId = "a2ad8a68-fa4d-4208-987c-2328faa92b00";
+$resourceUri = "https://management.azure.com/";
+$resourceUri = "https://graph.microsoft.com/";
+
+## $clientId = "aff9cacd-cdf1-48c4-b75f-ae2ab59c2dc3";
+## $clientSecret = "rbO7Q~8ugVvblbQG7P2fqvEQ0iReQb0SEHIFp";
+
+
+$url = "https://login.microsoftonline.com/$($tenantId)/oauth2/token";
+
+$body = "grant_type=client_credentials&client_id=$($clientId)&client_secret=$($clientSecret)&resource=$($resourceUri)";
+
+$response = $null;
+$response = Invoke-WebRequest -Uri $url -Method Post -Body $body;
+$response.Content | ConvertFrom-Json | Select-Object -ExpandProperty access_token;
+$response.Content | ConvertFrom-Json | Select-Object -ExpandProperty access_token | Set-Clipboard;
+$token = $response.Content | ConvertFrom-Json | Select-Object -ExpandProperty access_token;
+
+$headers = @{"Authorization" = "Bearer $token"};
+
+```
+
+### Test Management 
+
+```powershell
+
+
+### Test management
+Clear-Host;
+$subscriptionId = "0617cd7e-3534-470e-8afe-8c58072eb52c";
+
+$url = "https://management.azure.com/subscriptions/$($subscriptionId)/resourceGroups?api-version=2020-06-01";
+
+$response = $null;
+$response = Invoke-WebRequest -Uri $url -Method Get -Headers $headers;
+$response.Content | ConvertFrom-Json | ConvertTo-Json;
+
+
+
+
+
+```
+
+### Test Graph (AAD)
+
+
+```powershell
+
+### Test AAD (Graph)
+Clear-Host;
+$url = "https://graph.microsoft.com/v1.0/users";
+
+$response = $null;
+$response = Invoke-WebRequest -Uri $url -Method Get -Headers $headers;
+$response.Content | ConvertFrom-Json | ConvertTo-Json;
+
+```
+
+[Back to top](#table-of-content)
+
 
 ## CLI Commands
 
