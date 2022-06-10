@@ -160,10 +160,6 @@ $tenantId = "a2ad8a68-fa4d-4208-987c-2328faa92b00";
 $resourceUri = "https://management.azure.com/";
 $resourceUri = "https://graph.microsoft.com/";
 
-## $clientId = "aff9cacd-cdf1-48c4-b75f-ae2ab59c2dc3";
-## $clientSecret = "rbO7Q~8ugVvblbQG7P2fqvEQ0iReQb0SEHIFp";
-
-
 $url = "https://login.microsoftonline.com/$($tenantId)/oauth2/token";
 
 $body = "grant_type=client_credentials&client_id=$($clientId)&client_secret=$($clientSecret)&resource=$($resourceUri)";
