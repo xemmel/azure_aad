@@ -176,6 +176,11 @@ $token = $response.Content | ConvertFrom-Json | Select-Object -ExpandProperty ac
 
 $headers = @{"Authorization" = "Bearer $token"};
 
+$parts = $token.Split('.');
+[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($parts[0])) | ConvertFrom-Json | ConvertTo-Json;
+[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($parts[1])) | ConvertFrom-Json | ConvertTo-Json;
+
+
 ```
 
 ### Test Management 
