@@ -445,6 +445,15 @@ $user = az ad user list `
 $identityId = $user.id;
 $identityId;
 
+## SP
+Clear-Host;
+$user = az ad sp list --all `
+            --query "[].{name: displayName,id: id,type:type, displayName: appDisplayName}" |
+            ConvertFrom-Json |
+            Out-GridView -passthru;
+$identityId = $user.id;
+$identityId;
+
 ```
 
 ### Create Role Assignment 
