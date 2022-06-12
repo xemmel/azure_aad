@@ -10,6 +10,8 @@
 
 4.  [CLI Commands](#cli-Commands)
 
+10. [RBAC](#rbac)
+
 ## Introduction
 
 [Back to top](#table-of-content)
@@ -330,3 +332,139 @@ az ad app delete --id $appId;
 ```
 
 [Back to top](#table-of-content)
+
+## RBAC
+
+
+### Custom Definition
+
+```json
+{
+    "Name": "WebConfigReader",
+    "IsCustom": true,
+    "Description": "Can list App Settings in an App Service",
+    "actions": [
+        "Microsoft.Web/sites/config/list/action"
+    ],
+    "notActions": [],
+    "dataActions": [],
+    "notDataActions": [],
+    "AssignableScopes": [
+        "/providers/Microsoft.Management/managementGroups/a2ad8a68-fa4d-4208-987c-2328faa92b00"
+      ]
+}
+
+
+```
+### Add Role Definition
+
+```powershell
+
+Clear-Host;
+
+az role definition create --role-definition .\RoleDefintions\webconfigreader.json;
+
+az role definition update --role-definition .\RoleDefintions\webconfigreader.json;
+
+
+```
+
+### List Custom Definitions
+
+```powershell
+
+Clear-Host;
+az role definition list `
+    --custom-role-only --query "[].{name:roleName,scopes:assignableScopes}" `
+    --output yaml;
+
+
+```
+
+### View Role Assignments
+
+```powershell
+
+Clear-Host;
+$identityId = "a06be7b8-919d-49b9-86fb-7ab677d3d79b";
+
+az role assignment list --all --assignee $identityId `
+  --query "[].{id:id,identity:principalName,identityType:principalType,role:roleDefinitionName, scope: scope}" `
+  --output yaml;
+
+```
+### View All Role Assignments
+
+```powershell
+
+Clear-Host;
+$result = az role assignment list --all `
+--query "[].{id:id,identity:principalName, identityType: principalType,roleDef: roleDefinitionName, scope: scope}" `
+--output yaml;
+$result;
+$result | Set-ClipBoard;
+
+```
+
+### Get Role Definition
+
+```powershell
+
+Clear-Host;
+
+$roleDefName = Read-Host('Role');
+
+Clear-Host;
+$roleDef = az role definition list --query "[?(roleName == '$($roleDefName)')]" --output jsonc;
+# $roleDef;
+$roleDefId = $roleDef | ConvertFrom-Json | Select-Object -ExpandProperty id;
+$roleDefId | Set-ClipBoard;
+$roleDefId;
+
+```
+
+### Choose Identity
+
+```powershell
+## Groups
+Clear-Host;
+$group = az ad group list `
+            --query "[].{name: displayName,id: id,security:securityEnabled}" |
+            ConvertFrom-Json |
+            Out-GridView -passthru;
+$identityId = $group.id;
+$identityId;
+
+
+## Users
+Clear-Host;
+$user = az ad user list `
+            --query "[].{name: displayName,id: id,spName:userPrincipalName}" |
+            ConvertFrom-Json |
+            Out-GridView -passthru;
+$identityId = $user.id;
+$identityId;
+
+```
+
+### Create Role Assignment 
+
+```powershell
+
+Clear-Host;
+## $identityId = "a06be7b8-919d-49b9-86fb-7ab677d3d79b";
+
+### Set before or now (MUST be set)
+## $roleDefId = "/subscriptions/0617cd7e-3534-470e-8afe-8c58072eb52c/providers/Microsoft.Authorization/roleDefinitions/67164fb3-f01f-453c-a2bb-18685ea67d90";
+
+$scopeId = "/providers/Microsoft.Management/managementGroups/a2ad8a68-fa4d-4208-987c-2328faa92b00";
+
+az role assignment create `
+  --role $roleDefId `
+  --assignee $identityId `
+  --scope $scopeId;
+
+```
+
+[Back to top](#table-of-content)
+
