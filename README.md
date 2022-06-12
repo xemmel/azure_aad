@@ -386,7 +386,7 @@ az role definition list `
 ```powershell
 
 Clear-Host;
-$identityId = "a06be7b8-919d-49b9-86fb-7ab677d3d79b";
+## $identityId = "a06be7b8-919d-49b9-86fb-7ab677d3d79b";
 
 az role assignment list --all --assignee $identityId `
   --query "[].{id:id,identity:principalName,identityType:principalType,role:roleDefinitionName, scope: scope}" `
