@@ -334,7 +334,7 @@ az ad app delete --id $appId;
 
 [Back to top](#table-of-content)
 
-##OAuth2
+## OAuth2
 
 ```powershell
 
