@@ -7,6 +7,7 @@
 1. [Introduction](#introduction)
 2. [Web Apps](#web-apps)
 3. [Get Tokens](#get-tokens)
+4. [OAuth2](#oauth2)
 
 4.  [CLI Commands](#cli-Commands)
 
@@ -332,6 +333,67 @@ az ad app delete --id $appId;
 ```
 
 [Back to top](#table-of-content)
+
+##OAuth2
+
+```powershell
+
+Clear-Host;
+
+$url = "https://login.microsoftonline.com/adminintegrationit.onmicrosoft.com/oauth2";
+$clientId = "9efe5532-db0f-4d4b-8490-4d273143204c";
+$redirectUrl = "http://localhost:4444/signin-oidc";
+
+
+### Get Code
+Clear-Host;
+$authUrl = "$($url)/authorize";
+
+$responseType = "code";
+$scope = "https://graph.microsoft.com/User.Read";
+$scope = "https://graph.microsoft.com/User.Write";
+$scope = "openid";
+$fullUrl = "$($authUrl)?response_type=$($responseType)&client_id=$($clientId)&redirect_url=$($redirectUrl)&scope=$($scope)";
+$fullUrl;
+$fullUrl | Set-Clipboard;
+
+
+
+
+## Trade code for token!
+
+Clear-Host;
+$clientSecret = "hpy8Q~wlGJrJDRIJChTlJTZPEH0XkNu98oR7Nbm7";
+
+$response = 
+"https://localhost:7144/signin-oidc?code=0.AXkAbVgcVS2oJkWxhtBhzqpYnjJV_p4P20tNhJBNJzFDIEyUAAA.AgABAAIAAAD--DLA3VO7QrddgJg7WevrAgDs_wQA9P-F1BEiCtVSYqnrcbH2URY-lK7fzvmLpzGDKFBSUwg0wzhM6p9Pvy9V7z3kirUDS-E9QGFbX3ZYQJTTJ8qlXK-MDRhyT2E1BZO9-2K11y-pG2Ss82RIQTEuwwQE0Z-sPndwedM1DRxKhXjJTsx0FLBUOukMxAEW5BVz4alanK7PdL1vKnACP4b_aD9t1j5eed9xU6IEsM0P5oqFqLSkVYC3n_OkSFPS39PtXoNNswZbSIjE8pqwcJx9qhunhUFSNDY_hXqQV-FRume7MKv_WyGYZs2teU8DJR9oVMbH72o8ZGinCJy81NDWhpdMGI_v0ERgKZIDWLD2o7VAu6vD0XmUm3KOMfEPEESnZFEV9kD_MIFUo1TlkwF-sDpTOfiwht04Ek5rzlrmt6RKIrcJTz7SLZWiC608SAJYwcRqezve4FX50eCYM_UNxheWC1L3CXbKw3rg4-WjCziT1eiIAHteoW0Vj2hkqFsxrP89wjiwPJzwI3-bx1D7WvN7t3Y68YXHdH2225X0Fa0yt3rOGZgxT7x46YEezeMkmBFF5CyVsIunRWJPdwDRMLj7CDfltu9wvg&session_state=421e9728-106e-4b40-9569-2ec182203991#";
+
+$parts = $response.Split('?');
+$subpart = $parts[1].Split('&');
+$code = $subpart[0].Substring(5);
+
+$tokenUrl = "$($url)/token";
+
+$body = "redirect_url=$($redirectUrl)&client_id=$($clientId)&grant_type=authorization_code&client_secret=$($clientSecret)&code=$($code)";
+
+$r = $null;
+$r = Invoke-WebRequest -Method Post -Uri $tokenUrl -Body $body -Headers @{ "Content-Type" = "application/x-www-form-urlencoded" };
+
+$accessToken = $r.Content | ConvertFrom-Json | Select-Object -ExpandProperty access_token;
+$idToken = $r.Content | ConvertFrom-Json | Select-Object -ExpandProperty id_token;
+
+$accessToken | Set-Clipboard;
+$idToken | Set-Clipboard;
+
+
+
+
+
+
+```
+
+[Back to top](#table-of-content)
+
 
 ## RBAC
 
