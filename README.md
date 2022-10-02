@@ -7,11 +7,12 @@
 1. [Introduction](#introduction)
 2. [Web Apps](#web-apps)
 3. [Get Tokens](#get-tokens)
-4. [OAuth2](#oauth2)
+4. [Dotnet](#dotnet)
+5. [OAuth2](#oauth2)
 
-4.  [CLI Commands](#cli-Commands)
+6.  [CLI Commands](#cli-Commands)
 
-10. [RBAC](#rbac)
+7.  [RBAC](#rbac)
 
 ## Introduction
 
@@ -43,8 +44,9 @@ using Microsoft.Identity.Web.UI;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+builder
+    .Services
+    .AddMicrosoftIdentityWebAppAuthentication(builder.Configuration);
 
 builder.Services.AddAuthorization(options =>
 {
@@ -232,6 +234,21 @@ $response.Content | ConvertFrom-Json | ConvertTo-Json;
 
 [Back to top](#table-of-content)
 
+## Dotnet
+
+### Create Projects
+
+#### WebApp
+
+```powershell
+
+
+```
+
+
+[Back to top](#table-of-content)
+
+
 
 ## CLI Commands
 
@@ -365,8 +382,7 @@ $fullUrl | Set-Clipboard;
 Clear-Host;
 $clientSecret = "hpy8Q~wlGJrJDRIJChTlJTZPEH0XkNu98oR7Nbm7";
 
-$response = 
-"https://localhost:7144/signin-oidc?code=0.AXkAbVgcVS2oJkWxhtBhzqpYnjJV_p4P20tNhJBNJzFDIEyUAAA.AgABAAIAAAD--DLA3VO7QrddgJg7WevrAgDs_wQA9P-F1BEiCtVSYqnrcbH2URY-lK7fzvmLpzGDKFBSUwg0wzhM6p9Pvy9V7z3kirUDS-E9QGFbX3ZYQJTTJ8qlXK-MDRhyT2E1BZO9-2K11y-pG2Ss82RIQTEuwwQE0Z-sPndwedM1DRxKhXjJTsx0FLBUOukMxAEW5BVz4alanK7PdL1vKnACP4b_aD9t1j5eed9xU6IEsM0P5oqFqLSkVYC3n_OkSFPS39PtXoNNswZbSIjE8pqwcJx9qhunhUFSNDY_hXqQV-FRume7MKv_WyGYZs2teU8DJR9oVMbH72o8ZGinCJy81NDWhpdMGI_v0ERgKZIDWLD2o7VAu6vD0XmUm3KOMfEPEESnZFEV9kD_MIFUo1TlkwF-sDpTOfiwht04Ek5rzlrmt6RKIrcJTz7SLZWiC608SAJYwcRqezve4FX50eCYM_UNxheWC1L3CXbKw3rg4-WjCziT1eiIAHteoW0Vj2hkqFsxrP89wjiwPJzwI3-bx1D7WvN7t3Y68YXHdH2225X0Fa0yt3rOGZgxT7x46YEezeMkmBFF5CyVsIunRWJPdwDRMLj7CDfltu9wvg&session_state=421e9728-106e-4b40-9569-2ec182203991#";
+$response = Read-Host('response');
 
 $parts = $response.Split('?');
 $subpart = $parts[1].Split('&');
